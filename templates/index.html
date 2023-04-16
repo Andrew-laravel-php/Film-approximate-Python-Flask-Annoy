@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Film with ANNOY</title>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
+</head>
+<body>
+  <div class="form-group">
+    <label for="search-movie">Search for a movie:</label>
+    <input type="text" id="search-movie" class="form-control" placeholder="Enter a movie title">
+    <button type="button" id="search-button" class="btn btn-primary">Search</button>
+  </div>    
+</body>
+</html>
+<script>
+  $(document).ready(function() {
+// Initialize the Bloodhound suggestion engine
+var movies = new Bloodhound({
+  datumTokenizer: Bloodhound.tokenizers.whitespace,
+  queryTokenizer: Bloodhound.tokenizers.whitespace,
+  remote: {
+    url: '/suggest?q=%QUERY',
+    wildcard: '%QUERY'
+  }
+});
+
+// Initialize the typeahead widget with remote data source
+$('#search-movie').typeahead(null, {
+  minLength: 2,
+  source: movies
+});
+
+// Add click handler for search button
+$('#search-button').click(function() {
+  var query = $('#search-movie').val();
+  $.ajax({
+    url: '/search?query=' + query,
+    dataType: 'json',
+    success: function(data) {
+      // Display the search results
+      var results = data.join('<br>');
+      $('#search-results').html(results);
+    }
+  });
+});
+});
+</script>

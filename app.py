@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 import pandas as pd
 import gensim
 from annoy import AnnoyIndex
@@ -18,6 +18,16 @@ annoy_index = AnnoyIndex(doc2vec_model.vector_size, metric='angular')
 for i in range(len(movie_vectors)):
     annoy_index.add_item(i, movie_vectors[i])
 annoy_index.build(50)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/suggest')
+def suggest():
+  query = request.args.get('q')
+  suggestions = movies_df[movies_df['title'].str.contains(query, case=False)]['title'].tolist()
+  return jsonify(suggestions)
 
 @app.route('/search')
 def search():
