@@ -2,9 +2,10 @@ from flask import Flask, jsonify, request, render_template
 import pandas as pd
 import gensim
 from annoy import AnnoyIndex
+# from asgiref.wsgi import WsgiToAsgi
 
 app = Flask(__name__)
-
+# app = WsgiToAsgi(app)
 # Load movie data and create Annoy index
 movies_df = pd.read_csv('movies.csv')
 tagged_movies = [gensim.models.doc2vec.TaggedDocument(title.split(), [i]) for i, title in enumerate(movies_df['title'])]

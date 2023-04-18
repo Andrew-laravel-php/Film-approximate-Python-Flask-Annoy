@@ -1,0 +1,37 @@
+footer.bg-dark.text-center.text-white {
+    background: linear-gradient(109.6deg, rgb(20, 30, 48) 11.2%, rgb(36, 59, 85) 91.1%);
+}
+section.main {
+    background: url("images/slider-bg.jpg") no-repeat center center;
+    padding: 180px;
+}
+.form-control:focus{
+    color:black;
+}
+.tt-menu {
+    width: 304px;
+    color: white;
+}
+label{
+    color:white;
+}
+.form-group {
+    text-align: center;
+    margin: 0 auto;
+    margin-bottom: 1rem;
+}
+div#search-results {
+    color: white;
+}
+nav.navbar.navbar-expand-lg.navbar-light.bg-light {
+    background: linear-gradient(109.6deg, rgb(20, 30, 48) 11.2%, rgb(36, 59, 85) 91.1%);
+}
+.navbar-light .navbar-nav .active>.nav-link, .navbar-light .navbar-nav .nav-link.active, .navbar-light .navbar-nav .nav-link.show, .navbar-light .navbar-nav .show>.nav-link {
+    color: white;
+}
+.navbar-light .navbar-nav .nav-link {
+    color: white;
+}
+.navbar-light .navbar-brand {
+    color:white;
+}
