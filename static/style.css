@@ -35,3 +35,10 @@ nav.navbar.navbar-expand-lg.navbar-light.bg-light {
 .navbar-light .navbar-brand {
     color:white;
 }
+h1.middle-white {
+    margin: 0 auto;
+    color: white;
+    text-align: center;
+    margin: 120px;
+    font-size: 36px;
+}
