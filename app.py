@@ -1,14 +1,18 @@
 from flask import Flask, jsonify, request, render_template
 import pandas as pd
 import gensim
+from gensim.models import Doc2Vec
 from annoy import AnnoyIndex
 # from asgiref.wsgi import WsgiToAsgi
 
 app = Flask(__name__)
+
 # app = WsgiToAsgi(app)
 # Load movie data and create Annoy index
 movies_df = pd.read_csv('movies.csv')
 tagged_movies = [gensim.models.doc2vec.TaggedDocument(title.split(), [i]) for i, title in enumerate(movies_df['title'])]
+
+model = Doc2Vec.load('doc2vec.model')
 
 # Load Doc2Vec model
 doc2vec_model = gensim.models.Doc2Vec.load('doc2vec.model')
@@ -23,6 +27,10 @@ annoy_index.build(50)
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/searchbycategory')
+def sbc():
+    return render_template('search_by_category.html')
 
 @app.route('/suggest')
 def suggest():
@@ -40,5 +48,23 @@ def search():
     similar_movies = movies_df.iloc[nearest_neighbors]['title']
     return jsonify(similar_movies.tolist())
 
+@app.route('/search_by_category')
+def search_by_category():
+    genre = request.args.get('genre')
+    year = request.args.get('year')
+    rating = request.args.get('rating')
+    
+    query = f"{genre} {year} {rating}"
+    
+    movie_vector = doc2vec_model.infer_vector(query.split())
+    nearest_neighbors = annoy_index.get_nns_by_vector(movie_vector, 10)
+    similar_movies = movies_df.iloc[nearest_neighbors]['title']
+    
+    return render_template('search_by_category.html', similar_movies=similar_movies.tolist())
+
+
+
+
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
+
