@@ -101,7 +101,7 @@
               </ul>
             </div>
             <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-              <h5 class="text-uppercase">Полізна Інформація</h5>
+              <h5 class="text-uppercase">Корисна Інформація</h5>
     
               <ul class="list-unstyled mb-0">
                 <li>
@@ -173,8 +173,20 @@ $('#search-button').click(function() {
     dataType: 'json',
     success: function(data) {
       // Display the search results
-      var results = data.join('<br>');
-      $('#search-results').html(results);
+var results = ''; // Создаем переменную для хранения HTML-кода результатов поиска
+
+for (var i = 0; i < data.length; i++) {
+  var movie = data[i]; // Получаем информацию о конкретном фильме из массива
+
+  // Создаем новый HTML-код для каждого фильма и добавляем его в переменную results
+  results += '<div class="movie">';
+  results += '<img src="' + movie.Poster + '" alt="' + movie.Title + '">';
+  results += '<h2>' + movie.Title + '</h2>';
+  results += '</div>';
+}
+
+$('#search-results').html(results); // Добавляем HTML-код результатов поиска в контейнер
+
     }
   });
 });
