@@ -48,8 +48,9 @@ def search():
     if not query:
         return jsonify({'error': 'query parameter is missing'})
     movie_vector = doc2vec_model.infer_vector(query.split())
-    nearest_neighbors = annoy_index.get_nns_by_vector(movie_vector, 10)
+    nearest_neighbors, distances = annoy_index.get_nns_by_vector(movie_vector, 10, include_distances=True)
     similar_movies = movies_df.iloc[nearest_neighbors][['Title', 'Poster']]
+    similar_movies['Distance'] = distances
     return jsonify(similar_movies.to_dict(orient='records'))
 
 
