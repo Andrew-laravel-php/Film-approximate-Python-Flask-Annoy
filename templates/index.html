@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Film with ANNOY</title>
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.png">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
@@ -173,24 +174,32 @@ $('#search-button').click(function() {
     dataType: 'json',
     success: function(data) {
       // Display the search results
-var results = ''; // Создаем переменную для хранения HTML-кода результатов поиска
+      var results = ''; // Создаем переменную для хранения HTML-кода результатов поиска
 
-for (var i = 0; i < data.length; i++) {
-  var movie = data[i]; // Получаем информацию о конкретном фильме из массива
+      function getColorClass(distance) {
+        if (distance < 0.2) {
+          return 'green';
+        } else if (distance < 0.5) {
+          return 'yellow';
+        } else {
+          return 'red';
+        }
+      }
 
-  // Создаем новый HTML-код для каждого фильма и добавляем его в переменную results
-  results += '<div class="movie">';
-  results += '<img src="' + movie.Poster + '" alt="' + movie.Title + '">';
-  results += '<h2>' + movie.Title + '</h2>';
-  results += '<h3>Distance:</h3>';
-  results += '<h3>' + movie.Distance + '</h3>';
-  results += '</div>';
-}
+      for (var i = 0; i < data.length; i++) {
+        var movie = data[i]; // Получаем информацию о конкретном фильме из массива
 
-$('#search-results').html(results); // Добавляем HTML-код результатов поиска в контейнер
+        // Создаем новый HTML-код для каждого фильма и добавляем его в переменную results
+        results += '<div class="movie">';
+        results += '<img src="' + movie.Poster + '" alt="' + movie.Title + '">';
+        results += '<h2>' + movie.Title + '</h2>';
+        results += '<h3 class="' + getColorClass(movie.Distance) + '">Distance: ' + movie.Distance + '</h3>';
+        results += '</div>';
+      }
 
+      $('#search-results').html(results); // Добавляем HTML-код результатов поиска в контейнер
     }
   });
 });
-});
+  });
 </script>

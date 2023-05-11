@@ -78,3 +78,12 @@ footer.bg-dark.text-center.text-white {
 .mb-120{
     margin-bottom: 120px;
 }
+h3.yellow {
+    color: yellow;
+}
+h3.red {
+    color: red;
+}
+h3.green {
+    color: green;
+}
