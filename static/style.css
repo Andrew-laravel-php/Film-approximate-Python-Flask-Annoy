@@ -87,3 +87,14 @@ h3.red {
 h3.green {
     color: green;
 }
+@media screen and (max-width:768px) {
+    .pt-120 {
+        padding: 0px;
+    }
+    .mt-120 {
+        margin-top: 0px;
+    }
+    .mb-120 {
+        margin-bottom: 0px;
+    }
+}
