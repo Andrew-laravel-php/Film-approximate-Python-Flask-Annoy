@@ -1,15 +1,18 @@
 import pandas as pd
-from gensim.models.doc2vec import Doc2Vec, TaggedDocument
-from nltk.tokenize import word_tokenize
+import numpy as np
+from annoy import AnnoyIndex
+from sklearn.feature_extraction.text import TfidfVectorizer
 
-# Загрузка данных из CSV-файла
-df = pd.read_csv('movies.csv')
+data = pd.read_csv('movies.csv')
 
-# Создание документов для обучения модели
-documents = [TaggedDocument(words=word_tokenize(title.lower()), tags=[str(index)]) for index, title in df['Title'].items()]
-
-# Обучение модели Doc2Vec
-model = Doc2Vec(documents, vector_size=300, window=5, min_count=1, workers=4, epochs=20)
-
-# Сохранение модели в файл
-model.save('doc2vec.model')
+vectorizer = TfidfVectorizer(stop_words='english')
+vectorized_data = vectorizer.fit_transform(data['Title'])
+vectorized_data = vectorizer.fit_transform(data['Title'])
+vector_dimension = vectorized_data.shape[1]
+print(vector_dimension)
+index = AnnoyIndex(vectorized_data.shape[1], metric='angular')
+for i in range(vectorized_data.shape[0]):
+    vector = vectorized_data[i].toarray().flatten()
+    index.add_item(i, vector)
+index.build(n_trees=10)
+index.save('films.ann')
