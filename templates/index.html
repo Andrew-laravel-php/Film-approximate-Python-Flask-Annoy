@@ -120,48 +120,39 @@
 </html>
 <script>
   $(document).ready(function() {
-var movies = new Bloodhound({
-  datumTokenizer: Bloodhound.tokenizers.whitespace,
-  queryTokenizer: Bloodhound.tokenizers.whitespace,
-  remote: {
-    url: '/suggest?q=%QUERY',
-    wildcard: '%QUERY'
-  }
-});
+    $('#search-button').click(function() {
+      var query = $('#search-movie').val();
+      if (query.length >= 2) { // Minimum query length validation
+        $.ajax({
+          url: '/search?query=' + query,
+          dataType: 'json',
+          success: function(data) {
+            var results = '';
+            function getColorClass(distance) {
+              if (distance < 0.2) {
+                return 'green';
+              } else if (distance < 0.5) {
+                return 'yellow';
+              } else {
+                return 'red';
+              }
+            }
 
-$('#search-movie').typeahead(null, {
-  minLength: 2,
-  source: movies
-});
-$('#search-button').click(function() {
-  var query = $('#search-movie').val();
-  $.ajax({
-    url: '/search?query=' + query,
-    dataType: 'json',
-    success: function(data) {
-      var results = '';
-      function getColorClass(distance) {
-        if (distance < 0.2) {
-          return 'green';
-        } else if (distance < 0.5) {
-          return 'yellow';
-        } else {
-          return 'red';
-        }
+            for (var i = 0; i < data.length; i++) {
+              var movie = data[i]; 
+              results += '<div class="movie">';
+              results += '<img src="' + movie.Poster + '" alt="' + movie.Title + '">';
+              results += '<h2>' + movie.Title + '</h2>';
+              results += '<h3 class="' + getColorClass(movie.Distance) + '">Distance: ' + movie.Distance + '</h3>';
+              results += '</div>';
+            }
+
+            $('#search-results').html(results);
+          }
+        });
+      } else {
+        $('#search-results').html('Minimum query length is 2 characters.');
       }
-
-      for (var i = 0; i < data.length; i++) {
-        var movie = data[i]; 
-        results += '<div class="movie">';
-        results += '<img src="' + movie.Poster + '" alt="' + movie.Title + '">';
-        results += '<h2>' + movie.Title + '</h2>';
-        results += '<h3 class="' + getColorClass(movie.Distance) + '">Distance: ' + movie.Distance + '</h3>';
-        results += '</div>';
-      }
-
-      $('#search-results').html(results);
-    }
-  });
-});
+    });
   });
 </script>

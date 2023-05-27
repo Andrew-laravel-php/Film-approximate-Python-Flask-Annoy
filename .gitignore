@@ -152,4 +152,6 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-films.ann
+films.ann/
+.films.ann/
+.films.ann
