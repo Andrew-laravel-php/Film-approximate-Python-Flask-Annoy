@@ -159,3 +159,6 @@ films.ann
 
 
 *.ann
+
+# Ignore directories
+logs/
