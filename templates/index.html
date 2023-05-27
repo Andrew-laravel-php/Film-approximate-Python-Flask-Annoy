@@ -49,6 +49,8 @@
           <div class="col-md-6">
             <div class="left-side-preview" id="search-results">
             </div>
+            <div class="left-side-preview" id="recommendation-results">
+            </div>
           </div>
           <div class="mb-120"></div>  
         </div>
@@ -128,22 +130,12 @@
           dataType: 'json',
           success: function(data) {
             var results = '';
-            function getColorClass(distance) {
-              if (distance < 0.2) {
-                return 'green';
-              } else if (distance < 0.5) {
-                return 'yellow';
-              } else {
-                return 'red';
-              }
-            }
-
             for (var i = 0; i < data.length; i++) {
-              var movie = data[i]; 
+              var movie = data[i];
               results += '<div class="movie">';
               results += '<img src="' + movie.Poster + '" alt="' + movie.Title + '">';
               results += '<h2>' + movie.Title + '</h2>';
-              results += '<h3 class="' + getColorClass(movie.Distance) + '">Distance: ' + movie.Distance + '</h3>';
+              results += '<h3 class="' + movie.Color + '">Distance: ' + movie.Distance + '</h3>';
               results += '</div>';
             }
 
@@ -153,6 +145,35 @@
       } else {
         $('#search-results').html('Minimum query length is 2 characters.');
       }
+    });
+
+    // Recommendation button click event
+    $('#recommend-button').click(function() {
+      var preferences = []; // Array to hold user preferences
+
+      // Iterate over selected preferences checkboxes
+      $('input[name="preference"]:checked').each(function() {
+        preferences.push($(this).val()); // Add the preference to the array
+      });
+
+      // Perform recommendation request
+      $.ajax({
+        url: '/search?query=' + query + '&preferences=' + preferences.join('&preferences='),
+        dataType: 'json',
+        success: function(data) {
+          var results = '';
+          for (var i = 0; i < data.length; i++) {
+            var movie = data[i];
+            results += '<div class="movie">';
+            results += '<img src="' + movie.Poster + '" alt="' + movie.Title + '">';
+            results += '<h2>' + movie.Title + '</h2>';
+            results += '<h3 class="' + movie.Color + '">Distance: ' + movie.Distance + '</h3>';
+            results += '</div>';
+          }
+
+          $('#recommendation-results').html(results);
+        }
+      });
     });
   });
 </script>

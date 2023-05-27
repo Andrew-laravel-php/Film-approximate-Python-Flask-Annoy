@@ -65,8 +65,8 @@ ul.middle-white.text-left {
         margin-bottom: 12rem;
     }
     .form-control {
-        display: block;
-        width: 100%;
+        display: block !important;
+        width: 100% !important;
         height: calc(1.5em + .75rem + 2px);
         /* width: 35%; */
         padding: .375rem .75rem;
