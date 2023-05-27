@@ -16,16 +16,13 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-# Загрузка модели ANNOY из файла films.ann
-annoy_index = AnnoyIndex(26632)  # Замените vector_dimension на размерность вашего вектора признаков
+annoy_index = AnnoyIndex(26632)
 annoy_index.load('films.ann')
+
 vectorizer = TfidfVectorizer(stop_words='english')
 vectorized_data = vectorizer.fit_transform(data['Title'])
 
-# Создание датафрейма movies_df
 movies_df = pd.DataFrame(data, columns=['Title', 'Poster'])
-
-# Пример добавления дополнительных столбцов в датафрейм
 movies_df['Genre'] = data['Genre']
 movies_df['IMDB Score'] = data['IMDB Score']
 @app.route('/search')
@@ -36,7 +33,7 @@ def search():
 
     movie_vector = vectorizer.transform([query]).toarray().flatten()
 
-    # Найти ближайшие соседи с использованием модели ANNOY
+    # Пошук найближчого сусіда з використанням моделі ANNOY
     nearest_neighbors, distances = annoy_index.get_nns_by_vector(movie_vector, 5, include_distances=True)
 
     similar_movies = movies_df.iloc[nearest_neighbors][['Title', 'Poster']]
@@ -55,6 +52,41 @@ def search():
     similar_movies['Color'] = colors
 
     return jsonify(similar_movies.to_dict(orient='records'))
+
+@app.route('/searchbycategory')
+def search_by_category():
+    category = request.args.get('category')
+    if not category:
+        return jsonify({'error': 'category parameter is missing'})
+
+    # Получение всех фильмов из указанной категории
+    category_movies = movies_df[movies_df['Category'] == category]
+
+    if category_movies.empty:
+        return jsonify({'error': 'No movies found in the specified category'})
+
+    # Получение векторов фильмов в указанной категории
+    category_vectors = [vectorizer.transform([title]).toarray().flatten() for title in category_movies['Title']]
+
+    # Поиск ближайших соседей для каждого фильма в указанной категории
+    similar_movies = []
+    for vector in category_vectors:
+        nearest_neighbors, distances = annoy_index.get_nns_by_vector(vector, 5, include_distances=True)
+        similar_movies.extend(movies_df.iloc[nearest_neighbors][['Title', 'Poster']].to_dict(orient='records'))
+
+    # Добавление информации о расстоянии и цветах
+    for movie in similar_movies:
+        distance = movie['Distance']
+        if distance < 0.2:
+            movie['Color'] = 'green'
+        elif distance < 0.4:
+            movie['Color'] = 'yellow'
+        elif distance < 0.6:
+            movie['Color'] = 'orange'
+        else:
+            movie['Color'] = 'red'
+
+    return jsonify(similar_movies)
 
 if __name__ == '__main__':
     app.run(debug=True)

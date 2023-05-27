@@ -76,9 +76,6 @@
                   <a href="https://github.com/spotify/annoy" target="_blank" class="text-white">Annoy Github</a>
                 </li>
                 <li>
-                  <a href="#!" class="text-white">Link 3</a>
-                </li>
-                <li>
                   <a href="#!" class="text-white">Виготовив Андрій Бєлоусов ПТ-19-1</a>
                 </li>
               </ul>
@@ -108,33 +105,6 @@
                 <li>
                   <a href="https://github.com/hanabi1224/RuAnnoy" class="text-white">Rust version of Annoy</a>
                 </li>
-                <li>
-                  <a href="#!" class="text-white">Link 2</a>
-                </li>
-                <li>
-                  <a href="#!" class="text-white">Link 3</a>
-                </li>
-                <li>
-                  <a href="#!" class="text-white">Link 4</a>
-                </li>
-              </ul>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-              <h5 class="text-uppercase">Links</h5>
-    
-              <ul class="list-unstyled mb-0">
-                <li>
-                  <a href="#!" class="text-white">Link 1</a>
-                </li>
-                <li>
-                  <a href="#!" class="text-white">Link 2</a>
-                </li>
-                <li>
-                  <a href="#!" class="text-white">Link 3</a>
-                </li>
-                <li>
-                  <a href="#!" class="text-white">Link 4</a>
-                </li>
               </ul>
             </div>
           </div>
@@ -150,7 +120,6 @@
 </html>
 <script>
   $(document).ready(function() {
-// Initialize the Bloodhound suggestion engine
 var movies = new Bloodhound({
   datumTokenizer: Bloodhound.tokenizers.whitespace,
   queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -160,22 +129,17 @@ var movies = new Bloodhound({
   }
 });
 
-// Initialize the typeahead widget with remote data source
 $('#search-movie').typeahead(null, {
   minLength: 2,
   source: movies
 });
-
-// Add click handler for search button
 $('#search-button').click(function() {
   var query = $('#search-movie').val();
   $.ajax({
     url: '/search?query=' + query,
     dataType: 'json',
     success: function(data) {
-      // Display the search results
-      var results = ''; // Создаем переменную для хранения HTML-кода результатов поиска
-
+      var results = '';
       function getColorClass(distance) {
         if (distance < 0.2) {
           return 'green';
@@ -187,9 +151,7 @@ $('#search-button').click(function() {
       }
 
       for (var i = 0; i < data.length; i++) {
-        var movie = data[i]; // Получаем информацию о конкретном фильме из массива
-
-        // Создаем новый HTML-код для каждого фильма и добавляем его в переменную results
+        var movie = data[i]; 
         results += '<div class="movie">';
         results += '<img src="' + movie.Poster + '" alt="' + movie.Title + '">';
         results += '<h2>' + movie.Title + '</h2>';
@@ -197,7 +159,7 @@ $('#search-button').click(function() {
         results += '</div>';
       }
 
-      $('#search-results').html(results); // Добавляем HTML-код результатов поиска в контейнер
+      $('#search-results').html(results);
     }
   });
 });
