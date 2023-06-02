@@ -11,6 +11,63 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <script>
+      $(document).ready(function() {
+        $('#search-button').click(function() {
+          var query = $('#search-movie').val();
+          if (query.length >= 2) { // Minimum query length validation
+            $.ajax({
+              url: '/search?query=' + query,
+              dataType: 'json',
+              success: function(data) {
+                var results = '';
+                for (var i = 0; i < data.length; i++) {
+                  var movie = data[i];
+                  results += '<div class="movie">';
+                  results += '<img src="' + movie.Poster + '" alt="' + movie.Title + '">';
+                  results += '<h2>' + movie.Title + '</h2>';
+                  results += '<h3 class="' + movie.Color + '">Distance: ' + movie.Distance + '</h3>';
+                  results += '</div>';
+                }
+    
+                $('#search-results').html(results);
+              }
+            });
+          } else {
+            $('#search-results').html('Minimum query length is 2 characters.');
+          }
+        });
+    
+        // Recommendation button click event
+        $('#recommend-button').click(function() {
+          var preferences = []; // Array to hold user preferences
+    
+          // Iterate over selected preferences checkboxes
+          $('input[name="preference"]:checked').each(function() {
+            preferences.push($(this).val()); // Add the preference to the array
+          });
+    
+          // Perform recommendation request
+          $.ajax({
+            url: '/search?query=' + query + '&preferences=' + preferences.join('&preferences='),
+            dataType: 'json',
+            success: function(data) {
+              var results = '';
+              for (var i = 0; i < data.length; i++) {
+                var movie = data[i];
+                results += '<div class="movie">';
+                results += '<img src="' + movie.Poster + '" alt="' + movie.Title + '">';
+                results += '<h2>' + movie.Title + '</h2>';
+                results += '<h3 class="' + movie.Color + '">Distance: ' + movie.Distance + '</h3>';
+                results += '</div>';
+              }
+    
+              $('#recommendation-results').html(results);
+            }
+          });
+        });
+      });
+    </script>
 </head>
 <body>
       <!-- HEADER START -->
@@ -27,6 +84,9 @@
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="/searchbycategory">Пошук за категоріями</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/register">Регістрація</a>
               </li>
             </ul>
           </div>
@@ -120,60 +180,3 @@
     <!-- Footer END -->
 </body>
 </html>
-<script>
-  $(document).ready(function() {
-    $('#search-button').click(function() {
-      var query = $('#search-movie').val();
-      if (query.length >= 2) { // Minimum query length validation
-        $.ajax({
-          url: '/search?query=' + query,
-          dataType: 'json',
-          success: function(data) {
-            var results = '';
-            for (var i = 0; i < data.length; i++) {
-              var movie = data[i];
-              results += '<div class="movie">';
-              results += '<img src="' + movie.Poster + '" alt="' + movie.Title + '">';
-              results += '<h2>' + movie.Title + '</h2>';
-              results += '<h3 class="' + movie.Color + '">Distance: ' + movie.Distance + '</h3>';
-              results += '</div>';
-            }
-
-            $('#search-results').html(results);
-          }
-        });
-      } else {
-        $('#search-results').html('Minimum query length is 2 characters.');
-      }
-    });
-
-    // Recommendation button click event
-    $('#recommend-button').click(function() {
-      var preferences = []; // Array to hold user preferences
-
-      // Iterate over selected preferences checkboxes
-      $('input[name="preference"]:checked').each(function() {
-        preferences.push($(this).val()); // Add the preference to the array
-      });
-
-      // Perform recommendation request
-      $.ajax({
-        url: '/search?query=' + query + '&preferences=' + preferences.join('&preferences='),
-        dataType: 'json',
-        success: function(data) {
-          var results = '';
-          for (var i = 0; i < data.length; i++) {
-            var movie = data[i];
-            results += '<div class="movie">';
-            results += '<img src="' + movie.Poster + '" alt="' + movie.Title + '">';
-            results += '<h2>' + movie.Title + '</h2>';
-            results += '<h3 class="' + movie.Color + '">Distance: ' + movie.Distance + '</h3>';
-            results += '</div>';
-          }
-
-          $('#recommendation-results').html(results);
-        }
-      });
-    });
-  });
-</script>
