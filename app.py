@@ -106,22 +106,51 @@ def search_by_category():
     year = request.args.get('year')
     rating = request.args.get('rating')
 
-    filtered_movies = movies_df
+    #print(f'{genre}, {year}, {rating}')
+
+    # print(movies_df.columns)
+
+    # filtered_movies = movies_df[['Title', 'Genre']]
+
+    # filtered_movies = filtered_movies.dropna(subset=['Genre'])
+    # filtered_movies = filtered_movies[filtered_movies['Genre'].str.contains(genre, case=False)]
+
+    filtered_movies = pd.DataFrame()
+    titles = pd.DataFrame()
 
     if genre:
-        filtered_movies = filtered_movies[filtered_movies['Genre'].str.contains(genre, case=False)]
-
-    if year:
-        filtered_movies = filtered_movies[filtered_movies['Year'] == int(year)]
+        movies_df['Genre'] = movies_df['Genre'].fillna('')
+        filtered_movies = movies_df[movies_df['Genre'].str.contains(str(genre))]
+    
+    # if year:
+    #     filtered_movies = filtered_movies[filtered_movies['Year'] == year]
 
     if rating:
-        filtered_movies = filtered_movies[filtered_movies['IMDB Score'] >= float(rating)]
+        filtered_movies = filtered_movies[filtered_movies['IMDB Score'] >= float(rating)*2-1]
+        print(filtered_movies)
 
-    if filtered_movies.empty:
-        return jsonify({'message': 'No movies found based on the specified category.'})
+    if not filtered_movies.empty:
+        titles = filtered_movies['Title']
+
+    if not titles.empty:
+        return render_template('search_by_category.html', similar_movies=titles)
     else:
-        similar_movies = filtered_movies['Title'].tolist()
-        return render_template('search_by_category.html', similar_movies=similar_movies)
+        return render_template('search_by_category.html')
+
+    # if genre:
+    #     filtered_movies = filtered_movies[filtered_movies['Genre'].str.contains(genre, case=False)]
+
+    # if year:
+    #     filtered_movies = filtered_movies[filtered_movies['Year'] == int(year)]
+
+    # if rating:
+    #     filtered_movies = filtered_movies[filtered_movies['IMDB Score'] >= float(rating)]
+
+    # if filtered_movies.empty:
+    #     return jsonify({'message': 'No movies found based on the specified category.'})
+    # else:
+    #     similar_movies = filtered_movies['Title'].tolist()
+    #     return render_template('search_by_category.html', similar_movies=similar_movies)
 
 
 
