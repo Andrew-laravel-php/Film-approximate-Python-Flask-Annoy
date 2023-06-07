@@ -133,6 +133,7 @@ def search_by_category():
         titles = filtered_movies['Title']
 
     if not titles.empty:
+        titles = titles.head(10)
         return render_template('search_by_category.html', similar_movies=titles)
     else:
         return render_template('search_by_category.html')
