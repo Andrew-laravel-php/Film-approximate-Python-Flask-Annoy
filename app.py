@@ -127,7 +127,6 @@ def search_by_category():
 
     if rating:
         filtered_movies = filtered_movies[filtered_movies['IMDB Score'] >= float(rating)*2-1]
-        print(filtered_movies)
 
     if not filtered_movies.empty:
         titles = filtered_movies['Title']
