@@ -14,5 +14,5 @@ index = AnnoyIndex(vectorized_data.shape[1], metric='angular')
 for i in range(vectorized_data.shape[0]):
     vector = vectorized_data[i].toarray().flatten()
     index.add_item(i, vector)
-index.build(n_trees=10)
+index.build(n_trees=100)
 index.save('films.ann')
