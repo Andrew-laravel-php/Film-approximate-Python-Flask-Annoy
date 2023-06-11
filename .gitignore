@@ -162,3 +162,4 @@ films.ann
 
 # Ignore directories
 logs/
+films.zip
