@@ -1,52 +1,14 @@
 from flask import Flask, jsonify, request, render_template, url_for, flash, redirect
-import pandas as pd
-import gensim
 from gensim.models import Doc2Vec
 from annoy import AnnoyIndex
 from sklearn.feature_extraction.text import TfidfVectorizer
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email, EqualTo
-
+import pandas as pd
+import pytest 
 # Загрузка данных из файла CSV
 data = pd.read_csv('movies.csv')
 # Создание и инициализация векторизатора
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'apetiajiet1u351358paiX14u1390@1!'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///filmdb.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
- 
-# Class for form registration
-class RegistrationForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Sign Up')
 
-# # Model for user creation
-# class User(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     username = db.Column(db.String(80), unique=True, nullable=False)
-#     email = db.Column(db.String(120), unique=True, nullable=False)
-#     password = db.Column(db.String(80), nullable=False)
-#     pass_hash = db.Column(db.String(80), nullable=False)
-
-# db.create_all()
-
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        # Добавьте здесь код для обработки данных формы регистрации
-        flash('Registration successful!', 'success')
-        return redirect(url_for('login'))
-    return render_template('register.html', form=form)
-
-@app.route('/login')
-def login():
-    return render_template('index.html')
 
 
 @app.route('/')
@@ -153,6 +115,18 @@ def search_by_category():
     #     return render_template('search_by_category.html', similar_movies=similar_movies)
 
     #Handwrite test for check accesability 
+
+@pytest.fixture
+def client():
+    app.config['TESTING'] = True
+    with app.test_client() as client:
+        yield client
+
+def test_home_page():
+    response = app.test_client().get('/')
+    assert response.status_code == 200
+    assert b"Welcome to my Flask app" in response.data
+
 
 if __name__ == '__main__':
     app.run(debug=True)
