@@ -37,7 +37,7 @@
         <form method="get" action="{{ url_for('search_by_category') }}">
           <label for="genre">Жанр:</label>
           <select name="genre" id="genre">
-            <option value="Action">Екшн</option>
+            <option value="Action">Бойовик</option>
             <option value="Comedy">Комедія</option>
             <option value="Drama">Драма</option>
             <option value="Horror">Жахи</option>
@@ -63,16 +63,9 @@
         <div class="col-md-12 text-center">
           <h1 class="middle-white pt-120">Похожие фильмы</h1>
           <ul class="middle-white text-left">
-            {% if titles %}
-            <h1>Результаты поиска:</h1>
-            <ul>
-              {% for title in titles %}
-                <li>{{ title }}</li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            <p>Нет результатов поиска.</p>
-          {% endif %}
+            {% for movie in similar_movies %}
+              <li>{{ movie }}</li>
+            {% endfor %}
           </ul>
         </div>
       </div>

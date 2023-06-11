@@ -15,7 +15,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'apetiajiet1u351358paiX14u1390@1!'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///filmdb.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+ 
 # Class for form registration
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -152,7 +152,7 @@ def search_by_category():
     #     similar_movies = filtered_movies['Title'].tolist()
     #     return render_template('search_by_category.html', similar_movies=similar_movies)
 
-
+    #Handwrite test for check accesability 
 
 if __name__ == '__main__':
     app.run(debug=True)
