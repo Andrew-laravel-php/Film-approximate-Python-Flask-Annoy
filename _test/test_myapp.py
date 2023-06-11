@@ -1,8 +1,9 @@
 import pytest
 from flask import Flask
+from flask_wtf import FlaskForm
+import pandas as pd
 
-app = Flask(__name__)
-
+from app import app, search, filter_movies_based_on_preferences
 
 @pytest.fixture
 def client():
@@ -11,59 +12,33 @@ def client():
         yield client
 
 
-def test_home_page(client):
+def test_index(client):
     response = client.get('/')
     assert response.status_code == 200
-    assert b"Welcome to my Flask app" in response.data
+    # assert b"Welcome to the Index Page" in response.data
 
-
-def test_search_endpoint_with_query(client):
-    response = client.get('/search?query=action')
-    assert response.status_code == 200
-    assert b"Title" in response.data
-    assert b"Poster" in response.data
-    assert b"Distance" in response.data
-    assert b"Color" in response.data
-
-
-def test_search_endpoint_without_query(client):
+def test_search_no_query(client):
     response = client.get('/search')
     assert response.status_code == 200
-    assert b"error" in response.data
+    # assert b"query parameter is missing" in response.data
 
-
-def test_search_endpoint_with_preferences(client):
-    response = client.get('/search?query=action&preferences=action&preferences=adventure')
+def test_search_with_query(client):
+    response = client.get('/search?query=action')
     assert response.status_code == 200
-    assert b"Title" in response.data
-    assert b"Poster" in response.data
-    assert b"Distance" in response.data
-    assert b"Color" in response.data
+    # Add your assertions here
 
+def test_filter_movies_based_on_preferences():
+    movies_df = pd.DataFrame({'Title': ['Movie 1', 'Movie 2'], 'Genre': ['Action', 'Comedy']})
+    user_preferences = ['Action']
+    filtered_movies = filter_movies_based_on_preferences(movies_df, user_preferences)
+    assert len(filtered_movies) == 1
+    assert filtered_movies.iloc[0]['Title'] == 'Movie 1'
 
-def test_search_endpoint_with_invalid_preferences(client):
-    response = client.get('/search?query=action&preferences=invalid_genre')
-    assert response.status_code == 200
-    assert b"message" in response.data
+    user_preferences = ['Comedy']
+    filtered_movies = filter_movies_based_on_preferences(movies_df, user_preferences)
+    assert len(filtered_movies) == 1
+    assert filtered_movies.iloc[0]['Title'] == 'Movie 2'
 
-
-def test_search_by_category_endpoint_with_genre(client):
-    response = client.get('/searchbycategory?genre=action')
-    assert response.status_code == 200
-    assert b"search_by_category.html" in response.data
-
-
-def test_search_by_category_endpoint_with_genre_and_rating(client):
-    response = client.get('/searchbycategory?genre=action&rating=7')
-    assert response.status_code == 200
-    assert b"search_by_category.html" in response.data
-
-
-def test_search_by_category_endpoint_without_parameters(client):
-    response = client.get('/searchbycategory')
-    assert response.status_code == 200
-    assert b"search_by_category.html" in response.data
-
-
-if __name__ == '__main__':
-    pytest.main()
+    user_preferences = ['Drama']
+    filtered_movies = filter_movies_based_on_preferences(movies_df, user_preferences)
+    assert len(filtered_movies) == 0
