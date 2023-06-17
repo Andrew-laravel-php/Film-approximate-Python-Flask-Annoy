@@ -67,54 +67,28 @@ def search_by_category():
     genre = request.args.get('genre')
     year = request.args.get('year')
     rating = request.args.get('rating')
-
-    #print(f'{genre}, {year}, {rating}')
-
-    # print(movies_df.columns)
-
-    # filtered_movies = movies_df[['Title', 'Genre']]
-
-    # filtered_movies = filtered_movies.dropna(subset=['Genre'])
-    # filtered_movies = filtered_movies[filtered_movies['Genre'].str.contains(genre, case=False)]
-
     filtered_movies = pd.DataFrame()
     titles = pd.DataFrame()
-
     if genre:
         movies_df['Genre'] = movies_df['Genre'].fillna('')
         filtered_movies = movies_df[movies_df['Genre'].str.contains(str(genre))]
-    
-    # if year:
-    #     filtered_movies = filtered_movies[filtered_movies['Year'] == year]
-
     if rating:
         filtered_movies = filtered_movies[filtered_movies['IMDB Score'] >= float(rating)*2-1]
 
     if not filtered_movies.empty:
+        # num_rows = len(filtered_movies)
+        filtered_movies = filtered_movies.sample(n=5)
         titles = filtered_movies['Title']
+        posters = filtered_movies['Poster']
+        
 
     if not titles.empty:
-        titles = titles.head(10)
-        return render_template('search_by_category.html', similar_movies=titles)
+        titles = titles.head(10).tolist()
+        posters = posters.head(10).tolist()
+        return render_template('search_by_category.html', similar_movies=titles,posters=posters)
     else:
         return render_template('search_by_category.html')
 
-    # if genre:
-    #     filtered_movies = filtered_movies[filtered_movies['Genre'].str.contains(genre, case=False)]
-
-    # if year:
-    #     filtered_movies = filtered_movies[filtered_movies['Year'] == int(year)]
-
-    # if rating:
-    #     filtered_movies = filtered_movies[filtered_movies['IMDB Score'] >= float(rating)]
-
-    # if filtered_movies.empty:
-    #     return jsonify({'message': 'No movies found based on the specified category.'})
-    # else:
-    #     similar_movies = filtered_movies['Title'].tolist()
-    #     return render_template('search_by_category.html', similar_movies=similar_movies)
-
-    #Handwrite test for check accesability 
 
 @pytest.fixture
 def client():

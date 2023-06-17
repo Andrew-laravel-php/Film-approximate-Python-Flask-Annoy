@@ -24,6 +24,8 @@ label{
     margin-bottom: 1rem;
 }
 div#search-results {
+    display: flex;
+    flex-direction: row;
     color: white;
 }
 nav.navbar.navbar-expand-lg.navbar-light.bg-light {
@@ -47,6 +49,9 @@ h1.middle-white {
 ul.middle-white.text-left {
     color: white;
     font-size: 26px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
 }
 @media screen and (max-width:768px) {
     section.main {
@@ -113,6 +118,11 @@ h3.green {
     .mb-120 {
         margin-bottom: 0px;
     }
+    div#search-results {
+        display: flex;
+        flex-direction: column;
+        color: white;
+    }
     .form-control {
         display: block;
         width: 100%;
@@ -151,6 +161,8 @@ h3.green {
 h3.orange{
     color:orange;
 }
-.movie{
+
+.movie {
+    margin-left: 25px;
     display: inline-block;
 }

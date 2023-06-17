@@ -63,9 +63,12 @@
         <div class="col-md-12 text-center">
           <h1 class="middle-white pt-120">Похожие фильмы</h1>
           <ul class="middle-white text-left">
-            {% for movie in similar_movies %}
-              <li>{{ movie }}</li>
+            {% for index in range(similar_movies|length) %}
+              {% set movie = similar_movies[index] %}
+              {% set poster = posters[index] %}
+              <ul>{{ movie }}</ul><ul><img src="{{ poster }}"/></ul>
             {% endfor %}
+
           </ul>
         </div>
       </div>
