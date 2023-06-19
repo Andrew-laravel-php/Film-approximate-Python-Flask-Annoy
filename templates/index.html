@@ -53,7 +53,7 @@ $('.poster').each(function() {
                 results += '<div class="movie">';
                 results += '<img src="' + movie.Poster + '" alt="' + movie.Title + '">';
                 results += '<h2 style="color:white;">' + movie.Title + '</h2>';
-                results += '<h3 class="' + movie.Color + '">Distance: ' + movie.Distance + '</h3>';
+                results += '<h3 class="' + movie.Color + '">Distance: ' + movie.Distance.toFixed(3) + '</h3>';
                 results += '</div>';
               }
               $('#recommendation-results').html(results);
@@ -89,7 +89,7 @@ $('.poster').each(function() {
                 results += '<div class="movie">';
                 results += '<img src="' + movie.Poster + '" alt="' + movie.Title + '">';
                 results += '<h2 style="color:white;">' + movie.Title + '</h2>';
-                results += '<h3 class="' + movie.Color + '">Distance: ' + movie.Distance + '</h3>';
+                results += '<h3 class="' + movie.Color + '">Distance: ' + movie.Distance.toFixed(3) + '</h3>';
                 results += '</div>';
               }
     
