@@ -5,8 +5,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
 import pytest 
 import time
-
-
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # Загрузка данных из файла CSV
 data = pd.read_csv('movies.csv')
@@ -15,20 +14,27 @@ app = Flask(__name__)
 # SQLALCHEMY
 app.config['SECRET_KEY'] = 'atoeatoatp1395189kj@'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'  # Используйте вашу базу данных
-
 db = SQLAlchemy(app)
 
-#class
+#clases
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.String(80), nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
 
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
 
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
+class Movie(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    movie_id = db.Column(db.String(50), nullable=False)
+    tfidf_vector = db.Column(db.String(1000), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+#register page
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -50,6 +56,42 @@ def register():
     
     return render_template('register.html')
 
+#dashboard
+@app.route('/dashboard')
+def dashboard():
+    return 'Страница пользователя'
+
+#login page
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        user = User.query.filter_by(username=username).first()
+        if user and user.check_password(password):
+            # Успешная аутентификация
+            return redirect(url_for('dashboard'))
+        else:
+            # Неправильное имя пользователя или пароль
+            return render_template('login.html', error='Неправильное имя пользователя или пароль')
+
+    return render_template('login.html')
+
+#select movie
+@app.route('/select_movie/<username>/<movie_id>/<tfidf_vector>', methods=['GET'])
+def select_movie(username, movie_id, tfidf_vector):
+    user = User.query.filter_by(username=username).first()
+    if user:
+        # Пример выбора фильма для пользователя
+        movie = Movie(movie_id=movie_id, tfidf_vector=tfidf_vector, user=user)
+        db.session.add(movie)
+        db.session.commit()
+        return 'Фильм выбран для пользователя ' + username
+    else:
+        return 'Пользователь не найден'
+
+#indexpage
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -64,6 +106,7 @@ movies_df = pd.DataFrame(data, columns=['Title', 'Poster'])
 movies_df['Genre'] = data['Genre']
 movies_df['IMDB Score'] = data['IMDB Score']
 
+#searchrequest
 @app.route('/search')
 def search():
     start_time = time.time()
@@ -114,6 +157,7 @@ def filter_movies_based_on_preferences(movies_df, user_preferences):
     filtered_movies = movies_df[movies_df['Genre'].isin(user_preferences)]
     return filtered_movies
 
+#searchbycategory
 @app.route('/searchbycategory')
 def search_by_category():
     genre = request.args.get('genre')
@@ -141,7 +185,7 @@ def search_by_category():
     else:
         return render_template('search_by_category.html')
 
-
+#pytests
 @pytest.fixture
 def client():
     app.config['TESTING'] = True
