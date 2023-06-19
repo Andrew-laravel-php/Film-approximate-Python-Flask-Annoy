@@ -166,3 +166,11 @@ h3.orange{
     margin-left: 25px;
     display: inline-block;
 }
+div#recommendation-results {
+    display: flex;
+}
+@media screen and (max-width:1024px) {
+    div#recommendation-results {
+        display: block;
+    }
+}

@@ -12,11 +12,18 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/style.css">
     <script>
-      function loadPoster(url, container) {
+function loadPoster(url, container) {
   var img = new Image();
+  img.onloadstart = function() {
+    $('#loading-icon').show(); // Показываем значок загрузки
+  };
   img.onload = function() {
     // Постер успешно загружен, заменяем контейнер изображением
     $(container).css('background-image', 'url(' + url + ')');
+    $('#loading-icon').hide(); // Скрываем значок загрузки
+  };
+  img.onerror = function() {
+    $('#loading-icon').hide(); // Скрываем значок загрузки в случае ошибки загрузки
   };
   img.src = url;
 }
@@ -28,30 +35,39 @@ $('.poster').each(function() {
 });
 
       $(document).ready(function() {
-        $('#search-button').click(function() {
-          var query = $('#search-movie').val();
-          if (query.length >= 2) { // Minimum query length validation
-            $.ajax({
-              url: '/search?query=' + query,
-              dataType: 'json',
-              success: function(data) {
-                var results = '';
-                for (var i = 0; i < data.length; i++) {
-                  var movie = data[i];
-                  results += '<div class="movie">';
-                  results += '<img src="' + movie.Poster + '" alt="' + movie.Title + '">';
-                  results += '<h2>' + movie.Title + '</h2>';
-                  results += '<h3 class="' + movie.Color + '">Distance: ' + movie.Distance.toFixed(2) + '</h3>';
-                  results += '</div>';
-                }
-    
-                $('#search-results').html(results);
+      $('#search-button').click(function() {
+  var query = $('#search-movie').val();
+  if (query.length >= 2) { // Minimum query length validation
+    $('#loading-icon').show(); // Показываем значок загрузки
+    $.ajax({
+      url: '/search?query=' + query,
+      dataType: 'json',
+      success: function(data) {
+        // Обработка успешного ответа
+
+        $('#loading-icon').hide(); // Скрываем значок загрузки
+        // Ваш код для отображения результатов поиска
+        var results = '';
+              for (var i = 0; i < data.length; i++) {
+                var movie = data[i];
+                results += '<div class="movie">';
+                results += '<img src="' + movie.Poster + '" alt="' + movie.Title + '">';
+                results += '<h2 style="color:white;">' + movie.Title + '</h2>';
+                results += '<h3 class="' + movie.Color + '">Distance: ' + movie.Distance + '</h3>';
+                results += '</div>';
               }
-            });
-          } else {
-            $('#search-results').html('Minimum query length is 2 characters.');
-          }
-        });
+              $('#recommendation-results').html(results);
+      },
+      error: function(error) {
+        // Обработка ошибки
+        $('#loading-icon').hide(); // Скрываем значок загрузки
+        alert('Произошла ошибка при выполнении запроса.');
+      }
+    });
+  } else {
+    $('#search-results').html('Минимальная длина запроса - 2 символа.');
+  }
+});
     
         // Recommendation button click event
         $('#recommend-button').click(function() {
@@ -72,7 +88,7 @@ $('.poster').each(function() {
                 var movie = data[i];
                 results += '<div class="movie">';
                 results += '<img src="' + movie.Poster + '" alt="' + movie.Title + '">';
-                results += '<h2>' + movie.Title + '</h2>';
+                results += '<h2 style="color:white;">' + movie.Title + '</h2>';
                 results += '<h3 class="' + movie.Color + '">Distance: ' + movie.Distance + '</h3>';
                 results += '</div>';
               }
@@ -117,6 +133,9 @@ $('.poster').each(function() {
             <label for="search-movie">Введіть назву фільму:</label>
             <input type="text" id="search-movie" class="form-control" placeholder="Введіть назву фільму">
             <button type="button" id="search-button" class="btn btn-primary">Пошук</button>
+            <div id="loading-icon" style="display: none;">
+              <img src="static/images/loading.gif" alt="Loading...">
+            </div>         
           </div> 
           <div class="col-md-6">
             <div class="left-side-preview" id="search-results">

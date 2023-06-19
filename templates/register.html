@@ -1,36 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Registration</title>
+    <title>User Registration</title>
 </head>
 <body>
-    <h1>Registration</h1>
+    <h1>User Registration</h1>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
-            <ul class="flashes">
+            <ul>
                 {% for message in messages %}
                     <li>{{ message }}</li>
                 {% endfor %}
             </ul>
         {% endif %}
     {% endwith %}
-    <form method="POST" action="{{ url_for('register') }}">
-        {{ form.hidden_tag() }}
-        <div>
-            {{ form.username.label }} {{ form.username() }}
-        </div>
-        <div>
-            {{ form.email.label }} {{ form.email() }}
-        </div>
-        <div>
-            {{ form.password.label }} {{ form.password() }}
-        </div>
-        <div>
-            {{ form.confirm_password.label }} {{ form.confirm_password() }}
-        </div>
-        <div>
-            {{ form.submit() }}
-        </div>
+    <form action="{{ url_for('register') }}" method="POST">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br><br>
+        <input type="submit" value="Register">
     </form>
 </body>
 </html>
