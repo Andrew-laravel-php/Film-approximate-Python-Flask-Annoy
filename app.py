@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template, url_for, flash, redirect
+from flask import Flask, jsonify, request, render_template, url_for, flash, redirect, session
 from flask_sqlalchemy import SQLAlchemy
 from annoy import AnnoyIndex
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -15,6 +15,14 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'atoeatoatp1395189kj@'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'  # Используйте вашу базу данных
 db = SQLAlchemy(app)
+
+#chat for users
+@app.route('/chat')
+def chat():
+    if 'username' not in session:
+        return redirect('/login')
+    username = session['username']
+    return render_template('chat.html', username=username)
 
 #clases
 class User(db.Model):
@@ -41,25 +49,27 @@ def register():
         username = request.form['username']
         password = request.form['password']
         
-        if not username or not password:
-            flash('Пожалуйста, заполните все поля!', 'error')
-        else:
-            user = User.query.filter_by(username=username).first()
-            if user:
-                flash('Такой пользователь уже существует!', 'error')
-            else:
-                new_user = User(username=username, password=password)
-                db.session.add(new_user)
-                db.session.commit()
-                flash('Регистрация прошла успешно!', 'success')
-                return redirect('/')
+        # Проверка, что имя пользователя не занято
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            return "Имя пользователя уже занято. Выберите другое имя."
+        
+        # Создание нового пользователя и сохранение в базе данных
+        new_user = User(username=username)
+        new_user.set_password(password)
+        
+        db.session.add(new_user)
+        db.session.commit()
+        
+        # Перенаправление на страницу входа после успешной регистрации
+        return redirect('/login')
     
     return render_template('register.html')
 
 #dashboard
 @app.route('/dashboard')
 def dashboard():
-    return 'Страница пользователя'
+    return render_template('dashboard.html')
 
 #login page
 @app.route('/login', methods=['GET', 'POST'])

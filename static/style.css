@@ -174,3 +174,10 @@ div#recommendation-results {
         display: block;
     }
 }
+.register {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+}

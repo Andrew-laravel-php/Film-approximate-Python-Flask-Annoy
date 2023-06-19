@@ -1,0 +1,26 @@
+<!-- login.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Вхід до чату</title>
+  </head>
+  <body>
+    <h1>Вхід до чату</h1>
+    <form method="POST" action="/login">
+      <input type="text" name="username" placeholder="Ваше Ім'я" required>
+      <input type="submit" value="Войти">
+    </form>
+  </body>
+</html>
+
+<!-- chat.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Чат</title>
+  </head>
+  <body>
+    <h1>Добро пожаловати в чат, {{ username }}!</h1>
+    <!-- Здесь будет размещен интерфейс чата -->
+  </body>
+</html>
